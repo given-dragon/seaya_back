@@ -42,6 +42,7 @@ router.get('/point', getUid, async (req, res, next) => {
 
 });
 
+//미션 클리어
 router.post('/:id/clear', getUid, async (req, res, next) => {    
     try {
         const user = await User.findOne({where:{uid:req.uid}});
@@ -66,8 +67,8 @@ router.post('/:id/clear', getUid, async (req, res, next) => {
         console.error(error);
         next(error);
     }
-    
 });
+//미션 클리어 취소
 router.post('/:id/cancle', getUid, async (req, res, next) => {    
     try {
         const user = await User.findOne({where:{uid:req.uid}});
