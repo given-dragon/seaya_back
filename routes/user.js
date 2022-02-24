@@ -37,7 +37,6 @@ router.get('refreshpoint', getUid, async (req, res, next) => {
         clearMissions = await user.getMissions(
             { attributes:['point']}
         );
-        
         return res.send(clearMissions);
     }
     return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
