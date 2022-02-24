@@ -43,6 +43,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
         next(error);
     }
 });
+//친구 수락
 router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
         const user = await User.findOne({where: {uid: req.uid}});
@@ -55,6 +56,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
         next(error);
     }
 });
+//친구 목록, 수락 대기중
 router.get('/show', getUid, async (req, res, next) => {
     try {
         const user = await User.findOne({where: {uid: req.uid}});
