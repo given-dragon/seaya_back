@@ -1,0 +1,67 @@
+const Sequelize = require('sequelize');
+
+module.exports = class User extends Sequelize.Model {
+    static init (sequelize) {        
+        return super.init({
+            uid: {
+                unique: true,
+                allowNull: false,
+                type: Sequelize.STRING(36),
+            },
+            name: {
+                allowNull: false,
+                type: Sequelize.STRING(15),                        
+            },
+            point: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+            }
+        }, {
+            sequelize,
+            timestamps: true,
+            underscored: false,
+            modelName: 'User',
+            tableName: 'users',
+            paranoid: true,
+            charset: 'utf8',
+            collate: 'utf8_general_ci',
+        });
+    }
+
+    static associate(db) {
+        // set user-user Friend relationship
+        db.User.belongsToMany(db.User, {
+            foreignKey: {
+                name: 'requestId'
+            },
+            as: 'AcceptUser',
+            through: db.Friend,
+        });
+        db.User.belongsToMany(db.User, {
+            foreignKey: 'acceptId',
+            as: 'RequestUser',
+            through: db.Friend,
+        });
+
+        //set user-mission relationship
+        db.User.belongsToMany(db.Mission, {
+            through: 'MissionCheck',
+        });
+
+        //set user-quiz relationship
+        db.User.belongsToMany(db.Quiz, {
+            through: 'QuizCheck',
+        });
+
+        //set user-campaign relationship
+        db.User.belongsToMany(db.Campaign, {
+            through: 'CampaignChek',
+        });
+
+        //set user-news relationship
+        db.User.belongsToMany(db.News, {
+            through: 'NewsCheck',
+        });
+
+    }
+}
