@@ -8,7 +8,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //Router
-const pageRouter = require('./routes/page');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const friendRouter = require('./routes/friend');
@@ -51,7 +50,6 @@ app.use(express.urlencoded({extended:true}));
 //     },
 // }));
 
-app.use('/', pageRouter);
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/friend', friendRouter);
