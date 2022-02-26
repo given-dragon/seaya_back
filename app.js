@@ -14,6 +14,7 @@ const friendRouter = require('./routes/friend');
 const missionRouter = require('./routes/mission');
 const quizRouter = require('./routes/quiz');
 const newsRouter = require('./routes/news');
+const campaignRouter = require('./routes/campaign');
 //sequelize
 const {sequelize} = require('./models');
 
@@ -57,6 +58,7 @@ app.use('/friend', friendRouter);
 app.use('/mission', missionRouter);
 app.use('/quiz', quizRouter);
 app.use('/news', newsRouter);
+app.use('/campaign', campaignRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} can't found router`);
