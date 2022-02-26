@@ -41,20 +41,22 @@ router.get('/point', getUid, async (req, res, next) => {
 });
 
 //미션 클리어
-router.post('/:id/clear', getUid, async (req, res, next) => {    
+router.post('/:msId/clear', getUid, async (req, res, next) => {    
     try {
         const user = await User.findOne({where:{uid:req.uid}});
         //성공했던 미션인지 체크
-        const isCleared = await user.getMissions({where:{id:req.params.id}});
+        const isCleared = await user.getMissions({where:{id:req.params.msId}});
+        console.log('junjun');
+        console.log(isCleared);
         if(isCleared.length){   //성공헀다면 등록하지않음
             return res.status(411).json({state: 'fail', message:`missionId:${isCleared[0]['id']} is cleared mission`})
         }
 
         //미션성공 등록 시작
-        const mission = await Mission.findOne({where:{id:req.params.id}});
+        const mission = await Mission.findOne({where:{id:req.params.msId}});
         if(mission){
             //MissionCheck에 등록
-            await user.addMission(parseInt(req.params.id));
+            await user.addMission(req.params.msId);
             //유저 점수 갱신
             // user.update({point: `${user.point} + ${mission.point}`});
             user.update({point: sequelize.literal(`${user.point} + ${mission.point}`)});
@@ -67,24 +69,24 @@ router.post('/:id/clear', getUid, async (req, res, next) => {
     }
 });
 //미션 클리어 취소
-router.post('/:id/cancle', getUid, async (req, res, next) => {    
+router.post('/:msId/cancle', getUid, async (req, res, next) => {    
     try {
         const user = await User.findOne({where:{uid:req.uid}});
         //성공한 미션인지 체크
-        const isCleared = await user.getMissions({where:{id:req.params.id}});
+        const isCleared = await user.getMissions({where:{id:req.params.msId}});
         if(isCleared.length){   //성공한 기록이 있으면 삭제 시작
-            const mission = await Mission.findOne({where:{id:req.params.id}});
+            const mission = await Mission.findOne({where:{id:req.params.msId}});
             if(mission){
                 //MissionCheck에 삭제
-                await user.removeMission(parseInt(req.params.id));
+                await user.removeMission(req.params.msId);
                 //유저 점수 갱신
-                user.update({point: sequelize.literal(`${user.point} - ${mission.point}`)});
+                await user.update({point: sequelize.literal(`${user.point} - ${mission.point}`)});
                 console.log(user);
                 return res.json({state: 'success', point: eval(user.point.val)});
             }
             return res.status(410).json({state:'fail', message:'cant found mission'});    
         }
-        return res.status(412).json({state: 'fail', message:`missionId:${req.params.id} is not cleared mission`});        
+        return res.status(412).json({state: 'fail', message:`missionId:${user.id} is not cleared mission`});        
     } catch (error) {
         console.error(error);
         next(error);

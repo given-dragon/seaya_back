@@ -8,12 +8,12 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //Router
-const pageRouter = require('./routes/page');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const friendRouter = require('./routes/friend');
 const missionRouter = require('./routes/mission');
 const quizRouter = require('./routes/quiz');
+const newsRouter = require('./routes/news');
 //sequelize
 const {sequelize} = require('./models');
 
@@ -51,12 +51,12 @@ app.use(express.urlencoded({extended:true}));
 //     },
 // }));
 
-app.use('/', pageRouter);
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/friend', friendRouter);
 app.use('/mission', missionRouter);
 app.use('/quiz', quizRouter);
+app.use('/news', newsRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} can't found router`);
