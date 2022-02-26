@@ -52,6 +52,7 @@ module.exports = class User extends Sequelize.Model {
         db.User.belongsToMany(db.Quiz, {
             through: 'QuizCheck',
         });
+        db.User.hasOne(db.DaillyCheck);
 
         //set user-campaign relationship
         db.User.belongsToMany(db.Campaign, {

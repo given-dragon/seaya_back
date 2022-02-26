@@ -1,5 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
+const User = require('../models/user');
 //jwt나 firebase 로그인 상태 점검
 
 exports.isLoggedIn = async (req, res, next) => {  
@@ -26,4 +27,13 @@ exports.getUid = async (req, res, next) => {
         });
     
     return next();
+}
+
+exports.checkDailly = async (req, res, next) => {
+    const user = await User.findOne({where:{uid:req.uid}});
+    const daillyCheck = await user.getDaillyCheck({where:{userId:user.id}});
+    if(daillyCheck==null){
+        return next();
+    }
+    return res.json({state:'fail', message:'user already solve quiz'});
 }
