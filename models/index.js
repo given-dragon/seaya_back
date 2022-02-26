@@ -9,6 +9,7 @@ const Campaign = require('./campaign');
 const Mission = require('./mission');
 const Quiz = require('./quiz');
 const Answer = require('./answer');
+const DaillyCheck = require('./daillycheck');
 
 const db = {};
 const sequelize = new Sequelize(
@@ -23,6 +24,7 @@ db.News = News;
 db.Campaign = Campaign;
 db.Mission = Mission;
 db.Quiz = Quiz;
+db.DaillyCheck = DaillyCheck;
 db.Answer = Answer;
 
 User.init(sequelize);
@@ -31,11 +33,13 @@ News.init(sequelize);
 Campaign.init(sequelize);
 Mission.init(sequelize);
 Quiz.init(sequelize);
+DaillyCheck.init(sequelize);
 Answer.init(sequelize);
 
 User.associate(db);
 Mission.associate(db);
 Quiz.associate(db);
+DaillyCheck.associate(db);
 News.associate(db);
 Campaign.associate(db);
 Answer.associate(db);

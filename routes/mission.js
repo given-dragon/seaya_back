@@ -5,8 +5,6 @@ const {getUid} = require('./middlewares');
 const User = require('../models/user');
 const Mission = require('../models/mission');
 
-
-
 const router = express.Router();
 
 //미션 리스트 출력
