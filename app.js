@@ -27,7 +27,7 @@ app.set('port', process.env.PORT || 8080);
 
 initializeApp({
     credential: applicationDefault(),
-})
+});
 
 sequelize.sync({ force: false })
     .then(() => {
