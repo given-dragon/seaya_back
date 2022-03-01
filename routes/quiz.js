@@ -31,7 +31,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
             //유저가 맞추지 않은 퀴즈만 FindAll
             var quiz = await Quiz.findAll({
                 where:{id:{[Op.not]:solvedQuizId}},
-                attributes:['id', 'quistion', 'point' ],
+                attributes:['id', 'question', 'point' ],
                 include:{
                     model: Answer,
                     attributes:['id', 'content', 'ans_check']

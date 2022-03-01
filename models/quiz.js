@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 module.exports = class Quiz extends Sequelize.Model{
     static init(sequelize) {
         return super.init({
-            quistion: Sequelize.STRING,
+            question: Sequelize.STRING,
             point: Sequelize.INTEGER,
 
         },{
