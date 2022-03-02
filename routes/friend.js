@@ -75,7 +75,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
         if(requestUser){
             const acceptCheck = await Friends.findOne({where:{acceptId:requestUser.id, requestId: req.params.id}});
             if(acceptCheck){    //이미 요청이 와있는경우
-                acceptCheck.update({state:1});
+                acceptCheck.update({state:true});
                 return res.send(acceptCheck);
             }
             await requestUser.addAcceptUser(parseInt(req.params.id));
@@ -93,7 +93,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
         const user = await User.findOne({where: {uid: req.uid}});
         if(user){
-            const friend = await Friends.update({state: 1},{ 
+            const friend = await Friends.update({state: true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
             return res.json({state:'success', result:friend});
