@@ -30,10 +30,9 @@ module.exports = class User extends Sequelize.Model {
 
     static associate(db) {
         // set user-user Friend relationship
+        // Friend
         db.User.belongsToMany(db.User, {
-            foreignKey: {
-                name: 'requestId'
-            },
+            foreignKey: 'requestId',
             as: 'AcceptUser',
             through: db.Friend,
         });
@@ -42,6 +41,17 @@ module.exports = class User extends Sequelize.Model {
             as: 'RequestUser',
             through: db.Friend,
         });
+        //Competition
+        db.User.belongsToMany(db.User, {
+            foreignKey: 'requestId',
+            as: 'CptAcceptuser',
+            through: db.Competition,
+        });
+        db.User.belongsToMany(db.User, {
+            foreignKey: 'acceptId',
+            as: 'CptRequestUser',
+            through: db.Competition,
+        })
 
         //set user-mission relationship
         db.User.belongsToMany(db.Mission, {
