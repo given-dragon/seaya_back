@@ -17,10 +17,14 @@ module.exports = class Competition extends Sequelize.Model {
                 defaultValue: 0,
                 type: Sequelize.INTEGER
             },
+            startTime:{
+                allowNull:true,
+                type:Sequelize.DATE
+            }
 
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: 'Competition',
             tableName: 'competition',
