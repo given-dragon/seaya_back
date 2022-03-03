@@ -24,7 +24,10 @@ module.exports = class Competition extends Sequelize.Model {
 
         }, {
             sequelize,
-            timestamps: false,
+            timestamps:true,
+            createdAt:false,
+            updatedAt:false,
+            deletedAt:true,
             underscored: false,
             modelName: 'Competition',
             tableName: 'competition',
