@@ -10,11 +10,12 @@ const schedule = require('node-schedule');
 const {User, Quiz, Answer, DaillyCheck, sequelize} = require('../models');
 const {Op} = require('sequelize');
 const {getUid, checkDailly} = require('./middlewares');
+const {updateCptPoint} = require('./point');
 
 const router = express.Router();
 
 
-//퀴즈 출력(DB에 있는거 전부 다)
+//퀴즈 출력
 router.get('/start', getUid, checkDailly, async (req, res, next) => {
         const user = await User.findOne({
             where:{uid:req.uid}, 
@@ -76,6 +77,7 @@ router.post('/end', getUid, checkDailly, async (req, res, next) => {
                 let totalPoint = 0;
                 quiz.forEach((point) => totalPoint+=point['point']);
                 await user.update({point: sequelize.literal(`${user.point} + ${totalPoint}`)},{transaction:t});
+                await updateCptPoint(user.id, totalPoint, true, t);
                 await t.commit();
                 return res.json({state:'success', point:eval(user.point.val)});
             }
