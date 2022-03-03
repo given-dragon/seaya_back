@@ -7,6 +7,8 @@ const User = require('../models/user');
 const Friends = require('../models/friend');
 const Competition = require('../models/competition');
 
+const schedule = require('node-schedule');
+
 const router = express.Router();
 
 //겨루기 목록 출력(진행중, 신청대기, 수락대기)
@@ -60,16 +62,23 @@ router.post('/:id/request', getUid, async (req, res, next) => {
         const requestUser = await User.findOne({where: {uid: req.uid}});
         if(requestUser){
             //친구인지 확인
-            const friendCheck = await Friends.findOne({where:{state:true, acceptId:requestUser.id, requestId:req.params.id}});
-            if(!friendCheck){
+            var friendCheck = await Friends.findOne({where:{state:true, acceptId:requestUser.id, requestId:req.params.id}});
+            friendCheck = (friendCheck==null) ? await Friends.findOne({where:{state:true, requestId:requestUser.id, acceptId:req.params.id}}) : friendCheck;
+            
+            if(friendCheck==null){
                 return res.json({state:'false', message:`userId (${requestUser.id}) and (${req.params.id}) is not friend`});
             }
             //이미 요청이 온 경우
             const acceptCheck = await Competition.findOne({where:{acceptId:requestUser.id, requestId: req.params.id}});
             if(acceptCheck){
-                acceptCheck.update({state:true});
+                acceptCheck.update({state:true, startAt: new Date()});
                 return res.send(acceptCheck);
             }
+            const duplicationCheck = await Competition.findOne({where:{acceptId:req.params.id, requestId: requestUser.id}});
+            //끝나지 않은 겨루기 중복 체크
+            if(duplicationCheck)                
+                return res.json({state:'fail', message:'duplication cpt request'});
+            
             await requestUser.addCptAcceptuser(parseInt(req.params.id));
             return res.json({state:'success', result: req.params.id});
         } else {
@@ -83,11 +92,28 @@ router.post('/:id/request', getUid, async (req, res, next) => {
 //겨루기 수락
 router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
-        const user = await User.findOne({where: {uid: 'd1oJhQr4GMRci8YY7oHKk4U9vba2'}});
+        const user = await User.findOne({where: {uid: 'NtvUWTDEMYWWzRTFtuAG6GgtzdJ3'}});
         if(user){
-            const competition = await Competition.update({state: true, startTime: new Date()},{ 
+            const scheduleTime = new Date();
+            //set competition start time
+            // scheduleTime.setHours(24,0,0,0); //다음날 자정으로 시간 설정
+            console.log(scheduleTime);
+            scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
+            const competition = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
+            schedule.scheduleJob(scheduleTime, async() => {
+                await Competition.update({startAt:scheduleTime},{ 
+                    where : { acceptId: user.id, requestId: req.params.id },
+                });
+            });
+
+            //set competition end time
+            // scheduleTime.setDate(startAt.getDate()+7); //일주일 뒤 종료
+            scheduleTime.setSeconds(scheduleTime.getSeconds() +100);
+            schedule.scheduleJob(scheduleTime, async() => {
+                await Competition.destroy({where : { acceptId: user.id, requestId: req.params.id },});
+            })
             return res.json({state:'success', result:competition});
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
@@ -96,6 +122,5 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
         next(error);
     }
 });
-
 
 module.exports = router;

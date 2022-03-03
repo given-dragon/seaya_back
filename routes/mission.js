@@ -4,6 +4,7 @@ const {sequelize} = require('../models');
 // const {Sequelize} = require('sequelize');
 // const Op = sequelize.Op;
 const {getUid} = require('./middlewares');
+const {updateCptPoint} = require('./point');
 const User = require('../models/user');
 const Mission = require('../models/mission');
 
@@ -72,6 +73,7 @@ router.post('/:msId/clear', getUid, async (req, res, next) => {
                 //유저 점수 갱신
                 // user.update({point: `${user.point} + ${mission.point}`});
                 await user.update({point: sequelize.literal(`${user.point} + ${mission.point}`)},{transaction:t});
+                await updateCptPoint(user.id, mission.point, true, t);
                 t.commit();
             } catch (error) {
                 console.error(error);
@@ -100,9 +102,8 @@ router.post('/:msId/cancle', getUid, async (req, res, next) => {
                     {transaction:t}
                 );
                 //유저 점수 갱신
-                await user.update({
-                    point: sequelize.literal(`${user.point} - ${mission[0].point}`)
-                },{transaction:t});                
+                await user.update({point: sequelize.literal(`${user.point} - ${mission[0].point}`)},{transaction:t});
+                await updateCptPoint(user.id, mission[0].point, false, t);
                 await t.commit();                
             }catch(error){
                 console.log('mission cancle transaction rollback');

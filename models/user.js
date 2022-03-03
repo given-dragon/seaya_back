@@ -45,12 +45,19 @@ module.exports = class User extends Sequelize.Model {
         db.User.belongsToMany(db.User, {
             foreignKey: 'requestId',
             as: 'CptAcceptuser',
-            through: db.Competition,
+            through: {
+                model: db.Competition,
+                unique:false,
+            }
         });
         db.User.belongsToMany(db.User, {
             foreignKey: 'acceptId',
+            unique:false,
             as: 'CptRequestUser',
-            through: db.Competition,
+            through: {
+                model: db.Competition,
+                unique:false,
+            }
         })
 
         //set user-mission relationship
