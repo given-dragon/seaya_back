@@ -1,8 +1,6 @@
 const express = require('express');
-// const path = require('path');
 const morgan = require('morgan');
-// const cookieParser = require('cookie-parser');
-// const session = require('express-session');
+const schedule = require('node-schedule');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -16,6 +14,7 @@ const quizRouter = require('./routes/quiz');
 const newsRouter = require('./routes/news');
 const campaignRouter = require('./routes/campaign');
 const cptRouter = require('./routes/competition');
+
 //sequelize
 const {sequelize} = require('./models');
 
@@ -23,8 +22,17 @@ const {initializeApp, applicationDefault} = require('firebase-admin/app');
 
 const app = express();
 
-app.set('port', process.env.PORT || 8080);
 
+//매일 자정에 미션체크 초기화(v)
+//데일리 체크도 초기화(v)
+//혹시나 삭제되지 않은 겨루기가 있는지 확인
+schedule.scheduleJob('0 0 0 * * *', async () => {
+    console.log('mission check reset');
+    await sequelize.query('DELETE FROM MissionCheck');
+    await sequelize.query('DELETE FROM DaillyCheck');
+});
+
+app.set('port', process.env.PORT || 8080);
 
 initializeApp({
     credential: applicationDefault(),
@@ -39,19 +47,8 @@ sequelize.sync({ force: false })
     });
 
 app.use(morgan('dev'));
-// app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-// app.use(cookieParser(process.env.COOKIE_SECRET));
-// app.use(session({
-//     resave: false,
-//     saveUninitialized: false,
-//     secret: process.env.COOKIE_SECRET,
-//     cookie: {
-//         httpOnly: true,
-//         secure: false,
-//     },
-// }));
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
