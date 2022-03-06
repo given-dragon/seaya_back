@@ -96,8 +96,8 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
         if(user){
             const scheduleTime = new Date();
             //set competition start time
-            // scheduleTime.setHours(24,0,0,0); //다음날 자정으로 시간 설정
-            console.log(scheduleTime);
+            //다음날 자정으로 시간 설정
+            // scheduleTime.setHours(24,0,0,0);            
             scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
             const competition = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
@@ -109,7 +109,8 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
             });
 
             //set competition end time
-            // scheduleTime.setDate(startAt.getDate()+7); //일주일 뒤 종료
+            //겨루기 종료를 위해 일주일 뒤로 시간 설정
+            // scheduleTime.setDate(startAt.getDate()+7); 
             scheduleTime.setSeconds(scheduleTime.getSeconds() +100);
             schedule.scheduleJob(scheduleTime, async() => {
                 await Competition.destroy({where : { acceptId: user.id, requestId: req.params.id },});
