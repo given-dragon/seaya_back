@@ -14,6 +14,7 @@ const quizRouter = require('./routes/quiz');
 const newsRouter = require('./routes/news');
 const campaignRouter = require('./routes/campaign');
 const cptRouter = require('./routes/competition');
+const {cptRefresh} = require('./function');
 
 //sequelize
 const {sequelize} = require('./models');
@@ -26,11 +27,17 @@ const app = express();
 //매일 자정에 미션체크 초기화(v)
 //데일리 체크도 초기화(v)
 //혹시나 삭제되지 않은 겨루기가 있는지 확인
+
 schedule.scheduleJob('0 0 0 * * *', async () => {
+    await cptRefresh();
+
     console.log('mission check reset');
     await sequelize.query('DELETE FROM MissionCheck');
-    await sequelize.query('DELETE FROM DaillyCheck');
+    await sequelize.query('DELETE FROM DaillyCheck');    
+    console.log('mission check end');    
 });
+
+
 
 app.set('port', process.env.PORT || 8080);
 
