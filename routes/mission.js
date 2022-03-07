@@ -4,7 +4,7 @@ const {sequelize} = require('../models');
 // const {Sequelize} = require('sequelize');
 // const Op = sequelize.Op;
 const {getUid} = require('./middlewares');
-const {updateCptPoint} = require('./point');
+const {updateCptPoint} = require('../function');
 const User = require('../models/user');
 const Mission = require('../models/mission');
 

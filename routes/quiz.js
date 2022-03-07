@@ -1,16 +1,9 @@
 //유저 정보 등등
 const express = require('express');
-const schedule = require('node-schedule');
-
-// const User = require('../models/user');
-// const Quiz = require('../models/quiz');
-// const Answer = require('../models/answer');
-// const DaillyCheck = require('../models/daillycheck');
-// const sequelize = require('sequelize');
 const {User, Quiz, Answer, DaillyCheck, sequelize} = require('../models');
 const {Op} = require('sequelize');
 const {getUid, checkDailly} = require('./middlewares');
-const {updateCptPoint} = require('./point');
+const {updateCptPoint} = require('../function');
 
 const router = express.Router();
 

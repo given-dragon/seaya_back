@@ -92,13 +92,13 @@ router.post('/:id/request', getUid, async (req, res, next) => {
 //겨루기 수락
 router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
-        const user = await User.findOne({where: {uid: 'NtvUWTDEMYWWzRTFtuAG6GgtzdJ3'}});
+        const user = await User.findOne({where: {uid: 'd1oJhQr4GMRci8YY7oHKk4U9vba2'}});
         if(user){
             const scheduleTime = new Date();
             //set competition start time
             //다음날 자정으로 시간 설정
-            // scheduleTime.setHours(24,0,0,0);            
-            scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
+            scheduleTime.setHours(24,0,0,0);            
+            // scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
             const competition = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
