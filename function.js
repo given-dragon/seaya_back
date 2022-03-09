@@ -5,11 +5,11 @@ const Competition = require('./models/competition');
 
 exports.updateCptPoint = async function (userId, point, flag, t){
     if(flag){
-        await Competition.update({ruPoint: sequelize.literal(`ruPoint + ${point}`)}, {where:{requestId:userId, endAt:null},transaction:t});
-        await Competition.update({auPoint: sequelize.literal(`auPoint + ${point}`)}, {where:{acceptId:userId, endAt:null},transaction:t});
+        await Competition.update({ruPoint: sequelize.literal(`ruPoint + ${point}`)}, {where:{requestId:userId, endAt:null, startAt:{[Op.not]:null}},transaction:t});
+        await Competition.update({auPoint: sequelize.literal(`auPoint + ${point}`)}, {where:{acceptId:userId, endAt:null, startAt:{[Op.not]:null}},transaction:t});
     }else{
-        await Competition.update({ruPoint: sequelize.literal(`ruPoint - ${point}`)}, {where:{requestId:userId, endAt:null},transaction:t});
-        await Competition.update({auPoint: sequelize.literal(`auPoint - ${point}`)}, {where:{acceptId:userId, endAt:null},transaction:t});
+        await Competition.update({ruPoint: sequelize.literal(`ruPoint - ${point}`)}, {where:{requestId:userId, endAt:null, startAt:{[Op.not]:null}},transaction:t});
+        await Competition.update({auPoint: sequelize.literal(`auPoint - ${point}`)}, {where:{acceptId:userId, endAt:null, startAt:{[Op.not]:null}},transaction:t});
     }
 }
 

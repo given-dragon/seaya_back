@@ -93,29 +93,33 @@ router.post('/:id/request', getUid, async (req, res, next) => {
 router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
         const user = await User.findOne({where: {uid: 'd1oJhQr4GMRci8YY7oHKk4U9vba2'}});
-        if(user){
-            const scheduleTime = new Date();
-            //set competition start time
-            //다음날 자정으로 시간 설정
-            scheduleTime.setHours(24,0,0,0);            
+        if(user){                    
             // scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
-            const competition = await Competition.update({state:true},{ 
+            const updateState = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
-            schedule.scheduleJob(scheduleTime, async() => {
-                await Competition.update({startAt:scheduleTime},{ 
-                    where : { acceptId: user.id, requestId: req.params.id },
+            console.log(updateState);
+            if(updateState[0]){
+                const scheduleTime = new Date();
+                //set competition start time
+                //다음날 자정으로 시간 설정
+                scheduleTime.setHours(24,0,0,0);    
+                schedule.scheduleJob(scheduleTime, async() => {
+                    await Competition.update({startAt:scheduleTime},{ 
+                        where : { acceptId: user.id, requestId: req.params.id },
+                    });
                 });
-            });
 
-            //set competition end time
-            //겨루기 종료를 위해 일주일 뒤로 시간 설정
-            // scheduleTime.setDate(startAt.getDate()+7); 
-            scheduleTime.setSeconds(scheduleTime.getSeconds() +100);
-            schedule.scheduleJob(scheduleTime, async() => {
-                await Competition.destroy({where : { acceptId: user.id, requestId: req.params.id },});
-            })
-            return res.json({state:'success', result:competition});
+                //set competition end time
+                //겨루기 종료를 위해 일주일 뒤로 시간 설정
+                // scheduleTime.setDate(startAt.getDate()+7); 
+                scheduleTime.setSeconds(scheduleTime.getSeconds() +100);
+                schedule.scheduleJob(scheduleTime, async() => {
+                    await Competition.destroy({where : { acceptId: user.id, requestId: req.params.id },});
+                })
+                return res.json({state:'success'});
+            }
+            return res.json({state:'fail', message:'competition accept fail'});
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {

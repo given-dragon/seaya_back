@@ -12,45 +12,27 @@ const router = express.Router();
 
 //미션 리스트 출력
 router.get('/', getUid, async (req, res, next) => {
-    
-
     //유저가 클리어한 미션 리스트
     const user = await User.findOne({where:{uid:req.uid}});
     
-    if(user) {
-        //전체 미션 리스트 (풀었던걸 제외하고 가져올 수 있나?)        
-        // let clearMissions = [];
+    if(user) {      
         let clearMissions = await user.getMissions({attributes:['id']});
         clearMissions.forEach((element, index) => {
             clearMissions[index] = element.id;
         });
-        console.log(clearMissions);
+        if(!clearMissions.length) clearMissions.push(0);
         const missions = await Mission.findAll({
-            // where:{id:{[Op.not]:clearMissions}},
-            attributes:['id', 'title', 'info', 'point', 'createdAt']
+            raw:true,
+            attributes:[
+                'id', 'title', 'info', 'point', 'createdAt',                
+                [sequelize.literal(`CASE WHEN id = ${clearMissions} THEN ${true} ELSE ${false} END`), 'isClear']
+            ]
         });
-        return res.json({missions: missions, clearMissions: clearMissions});
+        return res.json({missions: missions});
     }
     return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'}); 
 });
 
-//유저가 클리어한 미션들을 가져와서 점수만 집계(필요한가?)
-// router.get('/point', getUid, async (req, res, next) => {
-//     const user = await User.findOne({where:{uid:req.uid}});
-//     let clearMissions = [];
-
-//     if(user) {
-//         clearMissions = await user.getMissions(
-//             { attributes:['point']}
-//         );
-//         console.log(clearMissions);
-//         //배열에 담긴 점수를 합해서 응답에 보냄
-
-//         return res.send(clearMissions);
-//     }
-//     return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
-
-// });
 
 //미션 클리어
 router.post('/:msId/clear', getUid, async (req, res, next) => {    
