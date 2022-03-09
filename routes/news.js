@@ -48,7 +48,7 @@ router.post('/:newsId', getUid, async (req, res, next) => {
     if (user) {
         News.findOne({where:{id:req.params.newsId}})
             .then(async (news) => {
-                if(news==null) return res.json({status:'fail', message:'cant found news'});
+                if(news==null) return res.status(430).json({status:'fail', message:'cant found news'});
 
                 const read = await news.getUsers({where:{id:user.id}});
                 if (!read.length){
@@ -56,7 +56,7 @@ router.post('/:newsId', getUid, async (req, res, next) => {
                     await user.update({point: sequelize.literal(`${user.point} + ${news.point}`)});
                     return res.json({status:'success', point:eval(user.point)});
                 }
-                return res.json({status:'fail', message:'already read news'});
+                return res.status(431).json({status:'fail', message:'already read news'});
             })
             .catch((error) => {
                 console.error(error);

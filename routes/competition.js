@@ -66,7 +66,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
             friendCheck = (friendCheck==null) ? await Friends.findOne({where:{state:true, requestId:requestUser.id, acceptId:req.params.id}}) : friendCheck;
             
             if(friendCheck==null){
-                return res.json({state:'false', message:`userId (${requestUser.id}) and (${req.params.id}) is not friend`});
+                return res.status(450).json({state:'false', message:`userId (${requestUser.id}) and (${req.params.id}) is not friend`});
             }
             //이미 요청이 온 경우
             const acceptCheck = await Competition.findOne({where:{acceptId:requestUser.id, requestId: req.params.id}});
@@ -77,7 +77,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
             const duplicationCheck = await Competition.findOne({where:{acceptId:req.params.id, requestId: requestUser.id}});
             //끝나지 않은 겨루기 중복 체크
             if(duplicationCheck)                
-                return res.json({state:'fail', message:'duplication cpt request'});
+                return res.status(451).json({state:'fail', message:'duplication cpt request'});
             
             await requestUser.addCptAcceptuser(parseInt(req.params.id));
             return res.json({state:'success', result: req.params.id});
@@ -119,7 +119,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
                 })
                 return res.json({state:'success'});
             }
-            return res.json({state:'fail', message:'competition accept fail'});
+            return res.status(452).json({state:'fail', message:'competition accept fail'});
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
