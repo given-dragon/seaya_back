@@ -6,18 +6,17 @@ const {getUid} = require('./middlewares');
 const sequelize = require('sequelize');
 const router = express.Router();
 
-router.post('/', async (req, res, next) => {
-    const campaign = await Campaign.create({        
-        url: 'www.testcampaign.com',
-        title: 'test2 campaign title',
-        info: 'test2 info',
-        point: 21,
-    });
+// router.post('/', async (req, res, next) => {
+//     const campaign = await Campaign.create({        
+//         url: 'www.testcampaign.com',
+//         title: 'test2 campaign title',
+//         info: 'test2 info',
+//         point: 21,
+//     });
 
-    return res.send(campaign);
-});
+//     return res.send(campaign);
+// });
 
-//뉴스의 기본정보(id, 제목, 등등)을 모두 보냄 -> 뉴스탭에 표시
 router.get('/', async (req, res, next) => {
 
     Campaign.findAll()
@@ -35,7 +34,7 @@ router.post('/:cpnId', getUid, async (req, res, next) => {
     if (user) {
         Campaign.findOne({where:{id:req.params.cpnId}})
             .then(async (campaign) => {
-                if(campaign==null) return res.json({status:'fail', message:'cant found campaign'});
+                if(campaign==null) return res.status(440).json({status:'fail', message:'cant found campaign'});
 
                 const read = await campaign.getUsers({where:{id:user.id}});
                 if (!read.length){
@@ -43,7 +42,7 @@ router.post('/:cpnId', getUid, async (req, res, next) => {
                     await user.update({point: sequelize.literal(`${user.point} + ${campaign.point}`)});
                     return res.json({status:'success', point:eval(user.point)});
                 }
-                return res.json({status:'fail', message:'already read campaign'});
+                return res.status(441).json({status:'fail', message:'already read campaign'});
             })
             .catch((error) => {
                 console.error(error);

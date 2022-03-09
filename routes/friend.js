@@ -19,7 +19,7 @@ router.get('/:keyword', async (req, res, next) => {
         if (searchResult.length) {
             return res.json({state: 'success', result: searchResult});
         }
-        return res.json({state: 'fail', message:`cant found user ${req.params.keyword}`});
+        return res.status(400).json({state: 'fail', message:`cant found user ${req.params.keyword}`});
         
     }catch(error) {
         console.error(error);

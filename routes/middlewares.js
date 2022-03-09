@@ -35,5 +35,5 @@ exports.checkDailly = async (req, res, next) => {
     if(daillyCheck==null){
         return next();
     }
-    return res.json({state:'fail', message:'user already solve quiz'});
+    return res.status(421).json({state:'fail', message:'user already solve quiz'});
 }

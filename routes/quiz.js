@@ -31,6 +31,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
                     attributes:['id', 'content', 'ans_check']
                 },
             });
+            if(!quiz.length) return res.status(420).json({state:'fail', message:'quiz db is empty'});
             if(quiz.length > 5){
                 console.log('start get rand quiz');
                 var randQuiz = [];
@@ -76,7 +77,7 @@ router.post('/end', getUid, checkDailly, async (req, res, next) => {
                 return res.json({state:'success', point:eval(user.point.val)});
             }
             await t.commit();
-            return res.json({state:'fail', point:user.point});
+            return res.status(422).json({state:'fail', point:user.point, message:'all the quizzes are wrong'});
             
         } catch (error) {
             console.error(error);
