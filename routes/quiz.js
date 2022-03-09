@@ -1,6 +1,6 @@
 //유저 정보 등등
 const express = require('express');
-const {User, Quiz, Answer, DaillyCheck, sequelize} = require('../models');
+const {User, Quiz, Answer, sequelize} = require('../models');
 const {Op} = require('sequelize');
 const {getUid, checkDailly} = require('./middlewares');
 const {updateCptPoint} = require('../function');
