@@ -21,11 +21,31 @@ const router = express.Router();
 // });
 
 //뉴스의 기본정보(id, 제목, 등등)을 모두 보냄 -> 뉴스탭에 표시
-router.get('/', async (req, res, next) => {
+router.get('/', getUid, async (req, res, next) => {
 
-    News.findAll({attributes:['id', 'date', 'title', 'point']})
+    const readNewsId = 
+        await User.findOne({where:{uid:req.uid}})
+            .then(async (user) => {                
+                let newsId = [];
+                (await user.getNews({raw:true, attributes:['id']})).forEach(element => {
+                    newsId.push(element['id']);
+                });
+                return newsId;
+            })
+            .catch((error) => {
+                console.error(error);
+                return next(error);
+            });
+            
+    console.log(readNewsId);
+
+    News.findAll({attributes:[
+            'id', 'date', 'title', 'point',
+            [sequelize.literal(`CASE WHEN id IN (${readNewsId}) THEN ${true} ELSE ${false} END`), 'isRead']
+        ]})
         .then((news) => {
-            return res.json({state:'success', news:news});})
+            return res.json({state:'success', news:news});
+        })
         .catch((error) => {
             console.error(error);
             return next(error);

@@ -25,7 +25,7 @@ router.get('/', getUid, async (req, res, next) => {
             raw:true,
             attributes:[
                 'id', 'title', 'info', 'point', 'createdAt',                
-                [sequelize.literal(`CASE WHEN id = ${clearMissions} THEN ${true} ELSE ${false} END`), 'isClear']
+                [sequelize.literal(`CASE WHEN id IN (${clearMissions}) THEN ${true} ELSE ${false} END`), 'isClear']
             ]
         });
         return res.json({missions: missions});
