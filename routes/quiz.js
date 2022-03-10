@@ -18,7 +18,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
             }
         });
         if(user){
-            let solvedQuizId = user.getDataValue('Quizzes')
+            let solvedQuizId = await user.getDataValue('Quizzes')
             solvedQuizId.forEach((element, index) => {
                 solvedQuizId[index] = element.getDataValue('id');
             });

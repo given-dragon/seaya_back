@@ -1,21 +1,18 @@
 //유저 정보 등등
 const express = require('express');
-const sequelize = require('sequelize');
+// const sequelize = require('sequelize');
 const {getUid} = require('./middlewares');
 const User = require('../models/user');
-
+const {sequelize} = require('../models');
 const router = express.Router();
 
 // get user name, point, ranking
 router.get('/data', getUid, async (req, res, next) => {
     try{
-        const myData = await User.findAll({
-            attributes: [
-                'id', 'uid', 'name', 'point',
-                [sequelize.literal('(RANK() OVER (ORDER BY point DESC))'), 'rank']
-            ],
-        }).then((users) => {
-            return users.find(element => element['uid'] == req.uid);
+        const myData = await User.findOne({where:{uid:req.uid}, attributes:['id','name','point']});
+        const query = `SELECT 1 + COUNT(*) AS 'rank' FROM users WHERE point > (SELECT point FROM users WHERE uid = '${req.uid}')`        
+        const myRank = await sequelize.query(query, {
+            type:sequelize.QueryTypes.SELECT
         });
         
         if(myData){
@@ -34,7 +31,7 @@ router.get('/data', getUid, async (req, res, next) => {
                 state:'success', 
                 name:myData.name, 
                 total_point:myData.point, 
-                rank: myData.getDataValue('rank'),
+                rank: myRank[0].rank,//myData.getDataValue('rank'),
                 mission_point:mPoint,
                 quiz_point:qPoint,
                 news_point:nPoint,
