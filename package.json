@@ -4,15 +4,17 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "NODE_ENV=production PORT=80 node server",
+    "dev": "nodemon app"
   },
   "author": "given_dragon",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
-    "express-session": "^1.17.2",
     "firebase-admin": "^10.0.2",
+    "helmet": "^5.0.2",
+    "hpp": "^0.2.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "node-schedule": "^2.1.0",

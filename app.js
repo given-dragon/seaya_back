@@ -2,7 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const schedule = require('node-schedule');
 const dotenv = require('dotenv');
-
+const helmet = require('helmet');
+const hpp = require('hpp');
 dotenv.config();
 
 //Router
@@ -53,7 +54,14 @@ sequelize.sync({ force: false })
         console.error(error);
     });
 
-app.use(morgan('dev'));
+
+if(process.env.NODE_ENV === 'production'){
+    app.use(morgan('combined'));
+    app.use(helmet({contentSecurityPolicy: false}));
+    app.use(hpp());
+}else{
+    app.use(morgan('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
