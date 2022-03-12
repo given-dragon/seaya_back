@@ -7,7 +7,7 @@ const {getUid} = require('./middlewares');
 const {updateCptPoint} = require('../function');
 const User = require('../models/user');
 const Mission = require('../models/mission');
-
+const logger = require('../logger');
 const router = express.Router();
 
 //미션 리스트 출력
@@ -58,14 +58,14 @@ router.post('/:msId/clear', getUid, async (req, res, next) => {
                 await updateCptPoint(user.id, mission.point, true, t);
                 t.commit();
             } catch (error) {
-                console.error(error);
+                logger.error(error);
                 t.rollback();
             }
             return res.json({state: 'success', point: eval(user.point.val)});            
         }
         return res.status(410).json({state:'fail', message:'cant found mission'});
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -88,15 +88,15 @@ router.post('/:msId/cancle', getUid, async (req, res, next) => {
                 await updateCptPoint(user.id, mission[0].point, false, t);
                 await t.commit();                
             }catch(error){
-                console.log('mission cancle transaction rollback');
-                console.error(error);
+                logger.info('mission cancle transaction rollback');
+                logger.error(error);
                 await t.rollback();
             }
             return res.json({state: 'success', point: eval(user.point.val)});  
         }
         return res.status(412).json({state: 'fail', message:`missionId:${user.id} is not cleared mission`});        
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });

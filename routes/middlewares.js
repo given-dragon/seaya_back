@@ -1,6 +1,6 @@
-const express = require('express');
 const admin = require('firebase-admin');
 const User = require('../models/user');
+const logger = require('../logger');
 //jwt나 firebase 로그인 상태 점검
 
 exports.isLoggedIn = async (req, res, next) => {  
@@ -16,13 +16,13 @@ exports.getUid = async (req, res, next) => {
     await admin.auth()
         .verifyIdToken(req.headers['authorization'])
         .then((decodedToken) => {            
-            // console.log(decodedToken.uid);
+            // logger.info(decodedToken.uid);
             const uid = decodedToken.uid;
             req.uid = uid;    
-            console.log(req.uid);
+            logger.info(req.uid);
         })
         .catch((error) => {
-            console.error(error);
+            logger.error(error);
             next(error);
         });
     

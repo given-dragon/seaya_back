@@ -1,6 +1,6 @@
 const express = require('express');
-const { isLoggedIn, isNotLoggedIn, getUid } = require('./middlewares');
-
+const {getUid } = require('./middlewares');
+const logger = require('../logger');
 const User = require('../models/user');
 
 const router = express.Router();
@@ -14,22 +14,22 @@ router.post('/join', getUid, async (req, res, next) => {
             const exUser = await User.findOne({ where: {uid: uid} });
             // 유저 데이터베이스가 없으면 db생성
             if (exUser) {
-                console.log(`${exUser.name} is not new user`);
+                logger.info(`${exUser.name} is not new user`);
                 return res.status(401).json({ state : 'fail', message:`${exUser.name} is not new user`});
             } else {
-                console.log(`${name} is new user`);
+                logger.info(`${name} is new user`);
                 const newUser = await User.create({
                     name,
                     uid,
                     point: 0,
                 });
-                console.log(newUser);
+                logger.info(newUser);
                 return res.json({ state : 'success', message:'welcome'});
             }
         }
         return res.status(400).json({state:'fail', message : "empty uid in body" });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return next(error);
     }
 });
@@ -41,19 +41,19 @@ router.post('/login', getUid, async (req, res, next) => {
         const {uid} = req;
         if (uid !== ''){
             const exUser = await User.findOne({ where: {uid: uid} });
-            console.log(exUser);
+            logger.info(exUser);
             // 유저 데이터베이스가 있으면 true 반환
             if (exUser) {
-                console.log(`login user: ${exUser.name}`);
+                logger.info(`login user: ${exUser.name}`);
                 return res.json({state:'success', existDB : 'true' });
             } else {
-                console.log(`${exUser} is not our user`);
+                logger.info(`${exUser} is not our user`);
                 return res.status(400).json({state:'false', message:`${exUser} is not our user`});
             }
         }
         return res.status(400).json({state:'fail', message : "empty uid in body" });
     } catch(error) {
-        console.error(error);
+        logger.error(error);
         return next(error);
     }    
 });

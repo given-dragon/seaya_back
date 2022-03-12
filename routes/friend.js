@@ -5,7 +5,7 @@ const sequelize = require('sequelize');
 const Op = sequelize.Op;
 const User = require('../models/user');
 const Friends = require('../models/friend');
-
+const logger = require('../logger');
 
 const router = express.Router();
 //친구 목록, 수락 대기중
@@ -15,14 +15,14 @@ router.get('/:keyword', async (req, res, next) => {
     try{
         //sequelize like문법으로 사용자 이름 검색
         const searchResult =  await User.findAll({where: { name:{[Op.like]:`${req.params.keyword}%` }}});
-        console.log(searchResult);
+        logger.info(searchResult);
         if (searchResult.length) {
             return res.json({state: 'success', result: searchResult});
         }
         return res.status(400).json({state: 'fail', message:`cant found user ${req.params.keyword}`});
         
     }catch(error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -62,7 +62,7 @@ router.get('/', getUid, async (req, res, next) => {
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -84,7 +84,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
             return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
         }
     } catch(error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -100,7 +100,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });

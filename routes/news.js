@@ -2,6 +2,7 @@ const express = require('express');
 
 const User = require('../models/user');
 const News = require('../models/news');
+const logger = require('../logger');
 const {getUid} = require('./middlewares');
 const sequelize = require('sequelize');
 const router = express.Router();
@@ -35,7 +36,7 @@ router.get('/', getUid, async (req, res, next) => {
                 return newsId;
             })
             .catch((error) => {
-                console.error(error);
+                logger.error(error);
                 return next(error);
             });
 
@@ -48,7 +49,7 @@ router.get('/', getUid, async (req, res, next) => {
             return res.json({state:'success', news:news});
         })
         .catch((error) => {
-            console.error(error);
+            logger.error(error);
             return next(error);
         }); 
 });
@@ -74,10 +75,10 @@ router.get('/:newsId', async (req, res, next) => {
         //run python script
         pythonShell.PythonShell.run('pythontest.py', options, function(error, result){
             if(error){
-                console.error(error);
+                logger.error(error);
                 return next(error);
             }
-            console.log(result);
+            logger.info(result);
             return res.json({state:'success', summarized_text: result});
         });
     }else{
@@ -105,7 +106,7 @@ router.post('/:newsId', getUid, async (req, res, next) => {
                 return res.status(431).json({status:'fail', message:'already read news'});
             })
             .catch((error) => {
-                console.error(error);
+                logger.error(error);
                 next(error);
             });
     }
