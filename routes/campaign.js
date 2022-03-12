@@ -2,6 +2,7 @@ const express = require('express');
 
 const User = require('../models/user');
 const Campaign = require('../models/campaign');
+const logger = require('../logger');
 const {getUid} = require('./middlewares');
 const sequelize = require('sequelize');
 const router = express.Router();
@@ -23,7 +24,7 @@ router.get('/', async (req, res, next) => {
         .then((campaign) => {
             return res.json({state:'success', campaign:campaign});})
         .catch((error) => {
-            console.error(error);
+            logger.error(error);
             return next(error);
         }); 
 });
@@ -45,7 +46,7 @@ router.post('/:cpnId', getUid, async (req, res, next) => {
                 return res.status(441).json({status:'fail', message:'already read campaign'});
             })
             .catch((error) => {
-                console.error(error);
+                logger.error(error);
                 next(error);
             });
     }

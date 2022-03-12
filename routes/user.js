@@ -3,6 +3,7 @@ const express = require('express');
 // const sequelize = require('sequelize');
 const {getUid} = require('./middlewares');
 const User = require('../models/user');
+const logger = require('../logger');
 const {sequelize} = require('../models');
 const router = express.Router();
 
@@ -40,7 +41,7 @@ router.get('/data', getUid, async (req, res, next) => {
         }
         return res.status(400).json({state:'fail', message:'cant found user'});
     }catch(error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -49,7 +50,7 @@ router.get('/data', getUid, async (req, res, next) => {
 router.get('/refreshpoint', getUid, async (req, res, next) => {
     const user = await User.findOne({where:{uid:req.uid}});
     let clearMissions = [];
-    console.log(user);
+    logger.info(user);
     if(user) {
         clearMissions = await user.getMissions(
             { attributes:['point']}

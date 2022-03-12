@@ -6,7 +6,7 @@ const Op = sequelize.Op;
 const User = require('../models/user');
 const Friends = require('../models/friend');
 const Competition = require('../models/competition');
-
+const logger = require('../logger');
 const schedule = require('node-schedule');
 
 const router = express.Router();
@@ -27,7 +27,7 @@ router.get('/', getUid, async (req, res, next) => {
                 attributes:['id', 'name'],      
             }]
         });
-        // console.log(user);
+        // logger.info(user);
         if(user){
             //경쟁자 탐색
             let competitors = [];
@@ -36,12 +36,12 @@ router.get('/', getUid, async (req, res, next) => {
 
             //요청, 응답 대기 리스트에서 이미 경쟁자가 된 상태만 다른 array로 이동            
             requestWaiting.forEach((user, index) => {                
-                console.log(user);
+                logger.info(user);
                 if (user.getDataValue('Competition').getDataValue('state'))                    
                     competitors.push(requestWaiting.splice(index,1)[0]);
             });
             acceptWaiting.forEach((user, index) => {   
-                console.log(user);
+                logger.info(user);
                 if (user.getDataValue('Competition').getDataValue('state'))
                     competitors.push(acceptWaiting.splice(index,1)[0]);                
             });
@@ -50,7 +50,7 @@ router.get('/', getUid, async (req, res, next) => {
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -85,7 +85,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
             return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
         }
     } catch(error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -98,7 +98,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
             const updateState = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
-            console.log(updateState);
+            logger.info(updateState);
             if(updateState[0]){
                 const scheduleTime = new Date();
                 //set competition start time
@@ -123,7 +123,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error);
     }
 });

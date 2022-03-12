@@ -1,5 +1,6 @@
 //유저 정보 등등
 const express = require('express');
+const logger = require('../logger');
 const {User, Quiz, Answer, sequelize} = require('../models');
 const {Op} = require('sequelize');
 const {getUid, checkDailly} = require('./middlewares');
@@ -33,7 +34,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
             });
             if(!quiz.length) return res.status(420).json({state:'fail', message:'quiz db is empty'});
             if(quiz.length > 5){
-                console.log('start get rand quiz');
+                logger.info('start get rand quiz');
                 var randQuiz = [];
                 while(randQuiz.length < 5)
                     randQuiz.push(quiz.splice(Math.floor(Math.random()*quiz.length),1)[0])                
@@ -49,7 +50,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
 //퀴즈 정답처리
 router.post('/end', getUid, checkDailly, async (req, res, next) => {
     const user = await User.findOne({where:{uid:req.uid}});
-    console.log(user);
+    logger.info(user);
     if (user){
         // const quiz_result = [1];
         const {quiz_result} = req.body;
@@ -62,7 +63,7 @@ router.post('/end', getUid, checkDailly, async (req, res, next) => {
             // // endTime.setHours(24,0,0,0); //다음날 자정으로 시간 설정
             // // endTime.setSeconds(endTime.getSeconds() +5);
             // // schedule.scheduleJob(endTime, async() => {
-            // //     console.log('dailly quiz check delete');
+            // //     logger.info('dailly quiz check delete');
             // //     await DaillyCheck.destroy({where:{userId:user.id}});
             // // });
 
@@ -80,7 +81,7 @@ router.post('/end', getUid, checkDailly, async (req, res, next) => {
             return res.status(422).json({state:'fail', point:user.point, message:'all the quizzes are wrong'});
             
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             await t.rollback();
             next(error);
         }

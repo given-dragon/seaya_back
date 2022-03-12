@@ -2,6 +2,7 @@ const express = require('express');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 const Competition = require('./models/competition');
+const logger = require('../logger');
 
 exports.updateCptPoint = async function (userId, point, flag, t){
     if(flag){
@@ -15,23 +16,23 @@ exports.updateCptPoint = async function (userId, point, flag, t){
 
 exports.cptRefresh = async () => {
     const weekAgo  = new Date();
-    console.log('cpt refrest start');
-    console.log(`refresh Time: ${weekAgo}`);
+    logger.info('cpt refrest start');
+    logger.info(`refresh Time: ${weekAgo}`);
 
     try{
         //수락했지만 저장이 안된 요청들 모두 수락
         await Competition.update({startAt:weekAgo},{where : {state:1, startAt:null}});
         weekAgo.setDate(weekAgo.getDate()-7);
-        console.log(`refresh Time - week: ${weekAgo}`);
+        logger.info(`refresh Time - week: ${weekAgo}`);
         //일주일이 지난 겨루기 내역 모두 삭제
         await Competition.destroy({
             where: {
                 startAt:{[Op.lte]:weekAgo}
             }
         });
-        console.log('cpt refrest end');
+        logger.info('cpt refrest end');
     } catch(error){
-        console.log('cpt refrest error');
-        console.error(error);
+        logger.info('cpt refrest error');
+        logger.error(error);
     }
 }
