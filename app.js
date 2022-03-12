@@ -4,6 +4,7 @@ const schedule = require('node-schedule');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const logger = require('./logger');
 dotenv.config();
 
 //Router
@@ -22,6 +23,7 @@ const {sequelize} = require('./models');
 
 const {initializeApp, applicationDefault} = require('firebase-admin/app');
 
+
 const app = express();
 
 
@@ -32,10 +34,10 @@ const app = express();
 schedule.scheduleJob('0 0 0 * * *', async () => {
     await cptRefresh();
 
-    console.log('mission check reset');
+    logger.info('mission check reset');
     await sequelize.query('DELETE FROM MissionCheck');
     await sequelize.query('DELETE FROM DaillyCheck');    
-    console.log('mission check end');    
+    logger.info('mission check end');    
 });
 
 
@@ -48,14 +50,15 @@ initializeApp({
 
 sequelize.sync({ force: false })
     .then(() => {
-        console.log('데이터베이스 연결 성공');
+        logger.info('데이터베이스 연결 성공');
     })
     .catch((error) => {
-        console.error(error);
+        logger.error(error);
     });
 
 
 if(process.env.NODE_ENV === 'production'){
+    logger.info('production mod');
     app.use(morgan('combined'));
     app.use(helmet({contentSecurityPolicy: false}));
     app.use(hpp());
@@ -88,5 +91,5 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(app.get('port'), () => {
-    console.log(app.get('port'), 'port is waiting');
+    logger.info(app.get('port'), 'port is waiting');
 });
