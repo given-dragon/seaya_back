@@ -10,12 +10,23 @@ const router = express.Router();
 // get user name, point, ranking
 router.get('/data', getUid, async (req, res, next) => {
     try{
-        const myData = await User.findOne({where:{uid:req.uid}, attributes:['id','name','point']});
-        const query = `SELECT 1 + COUNT(*) AS 'rank' FROM users WHERE point > (SELECT point FROM users WHERE uid = '${req.uid}')`        
-        const myRank = await sequelize.query(query, {
-            type:sequelize.QueryTypes.SELECT
+        const myData = await User.findOne({
+            where:{uid:req.uid}, 
+            attributes:[
+                'id','name','point',
+            ]
         });
         
+        const query = `SELECT 1 + COUNT(*) AS 'rank' FROM users WHERE point > (SELECT point FROM users WHERE uid = '${req.uid}')`        
+        const query2 = `SELECT COUNT(*) AS count FROM users`;
+        const [myRank, userCount] = await Promise.all([
+            sequelize.query(query, {
+                type:sequelize.QueryTypes.SELECT
+            }),
+            sequelize.query(query2, {
+                type:sequelize.QueryTypes.SELECT
+            })
+        ]);
         if(myData){
             let mPoint=0, qPoint=0, nPoint=0, cPoint=0;
             const [mission, quiz, news, campaign] = await Promise.all([
@@ -32,7 +43,7 @@ router.get('/data', getUid, async (req, res, next) => {
                 state:'success', 
                 name:myData.name, 
                 total_point:myData.point, 
-                rank: myRank[0].rank,//myData.getDataValue('rank'),
+                percentile: (myRank[0].rank/userCount[0].count*100).toFixed(2),
                 mission_point:mPoint,
                 quiz_point:qPoint,
                 news_point:nPoint,

@@ -6,6 +6,7 @@ module.exports = class DaillyCheck extends Sequelize.Model{
         },{
             sequelize,
             timestamps: true,
+            updatedAt: false,
             deletedAt: false,
             underscored: false,
             modelName: 'DaillyCheck',
