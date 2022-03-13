@@ -2,7 +2,7 @@ const express = require('express');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 const Competition = require('./models/competition');
-const logger = require('../logger');
+const logger = require('./logger');
 
 exports.updateCptPoint = async function (userId, point, flag, t){
     if(flag){

@@ -1,8 +1,6 @@
 //친추, 겨루기 등등
 const express = require('express');
 const {getUid} = require('./middlewares');
-const sequelize = require('sequelize');
-const Op = sequelize.Op;
 const User = require('../models/user');
 const Friends = require('../models/friend');
 const Competition = require('../models/competition');

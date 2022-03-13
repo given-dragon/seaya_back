@@ -73,7 +73,7 @@ router.get('/:newsId', async (req, res, next) => {
             args:[newsUrl['url']]
         };
         //run python script
-        pythonShell.PythonShell.run('pythontest.py', options, function(error, result){
+        pythonShell.PythonShell.run('ML-main/main.py', options, function(error, result){
             if(error){
                 logger.error(error);
                 return next(error);
