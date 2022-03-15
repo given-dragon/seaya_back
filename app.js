@@ -30,7 +30,6 @@ const app = express();
 //매일 자정에 미션체크 초기화(v)
 //데일리 체크도 초기화(v)
 //혹시나 삭제되지 않은 겨루기가 있는지 확인(v)
-
 schedule.scheduleJob('0 0 0 * * *', async () => {
     await cptRefresh();
 

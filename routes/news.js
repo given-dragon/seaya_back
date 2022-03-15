@@ -9,20 +9,6 @@ const router = express.Router();
 
 const pythonShell = require('python-shell');
 
-// router.post('/', async (req, res, next) => {
-//     // const date = new Date().toString();
-//     const news = await News.create({
-//         date: '2022-02-27',
-//         url: 'www.testNews.com',
-//         title: 'test3 news title',
-//         publishing_company: 'test3 news company',
-//         reporter: 'test3 reporter',
-//         point: 12,
-//     });
-
-//     return res.send(news);
-// });
-
 //뉴스의 기본정보(id, 제목, 등등)을 모두 보냄 -> 뉴스탭에 표시
 router.get('/', getUid, async (req, res, next) => {
     //읽었던 뉴스 아이디 검색

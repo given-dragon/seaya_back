@@ -57,17 +57,4 @@ router.get('/data', getUid, async (req, res, next) => {
     }
 });
 
-//점수 갱싱...필요한가?
-router.get('/refreshpoint', getUid, async (req, res, next) => {
-    const user = await User.findOne({where:{uid:req.uid}});
-    let clearMissions = [];
-    logger.info(user);
-    if(user) {
-        clearMissions = await user.getMissions(
-            { attributes:['point']}
-        );
-        return res.send(clearMissions);
-    }
-    return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
-});
 module.exports = router;

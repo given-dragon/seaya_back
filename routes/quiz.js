@@ -56,16 +56,7 @@ router.post('/end', getUid, checkDailly, async (req, res, next) => {
         const {quiz_result} = req.body;
         const t = await sequelize.transaction();
         try {            
-            await user.createDaillyCheck({userId:user.id},{transaction:t});            
-
-            //app.js에서 일괄 처리
-            // const endTime = new Date();
-            // // endTime.setHours(24,0,0,0); //다음날 자정으로 시간 설정
-            // // endTime.setSeconds(endTime.getSeconds() +5);
-            // // schedule.scheduleJob(endTime, async() => {
-            // //     logger.info('dailly quiz check delete');
-            // //     await DaillyCheck.destroy({where:{userId:user.id}});
-            // // });
+            await user.createDaillyCheck({userId:user.id},{transaction:t});  
 
             if (quiz_result.length){
                 await user.addQuiz(quiz_result,{transaction:t});  //유저가 맞추었던 퀴즈 등록

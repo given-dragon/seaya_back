@@ -110,8 +110,7 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
 
                 //set competition end time
                 //겨루기 종료를 위해 일주일 뒤로 시간 설정
-                // scheduleTime.setDate(startAt.getDate()+7); 
-                scheduleTime.setSeconds(scheduleTime.getSeconds() +100);
+                scheduleTime.setDate(startAt.getDate()+7);
                 schedule.scheduleJob(scheduleTime, async() => {
                     await Competition.destroy({where : { acceptId: user.id, requestId: req.params.id },});
                 })

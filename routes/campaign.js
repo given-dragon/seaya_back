@@ -7,17 +7,6 @@ const {getUid} = require('./middlewares');
 const sequelize = require('sequelize');
 const router = express.Router();
 
-// router.post('/', async (req, res, next) => {
-//     const campaign = await Campaign.create({        
-//         url: 'www.testcampaign.com',
-//         title: 'test2 campaign title',
-//         info: 'test2 info',
-//         point: 21,
-//     });
-
-//     return res.send(campaign);
-// });
-
 router.get('/', async (req, res, next) => {
 
     Campaign.findAll()
