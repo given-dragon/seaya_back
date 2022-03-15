@@ -19,13 +19,15 @@ router.get('/', getUid, async (req, res, next) => {
                 (await user.getNews({raw:true, attributes:['id']})).forEach(element => {
                     newsId.push(element['id']);
                 });
-                return newsId;
+                
+                return newsId.length == 0 ? 0 : newsId;
             })
             .catch((error) => {
                 logger.error(error);
-                return 0;
+                return next(error);
             });
-        
+    
+    
     News.findAll({attributes:[
             'id', 'date', 'title', 'point',
             //isRead 값 추가(읽었던 뉴스면 true, 아니면 false)
