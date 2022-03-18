@@ -26,7 +26,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
             //유저가 맞추지 않은 퀴즈만 FindAll
             var quiz = await Quiz.findAll({
                 where:{id:{[Op.not]:solvedQuizId}},
-                attributes:['id', 'question', 'point' ],
+                attributes:['id', 'quistion', 'point' ],
                 include:{
                     model: Answer,
                     attributes:['id', 'content', 'ans_check']
@@ -50,9 +50,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
 //퀴즈 정답처리
 router.post('/end', getUid, checkDailly, async (req, res, next) => {
     const user = await User.findOne({where:{uid:req.uid}});
-    logger.info(user);
     if (user){
-        // const quiz_result = [1];
         const {quiz_result} = req.body;
         const t = await sequelize.transaction();
         try {            

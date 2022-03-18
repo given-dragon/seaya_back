@@ -66,8 +66,7 @@ router.get('/:newsId', async (req, res, next) => {
                 logger.error(error);
                 return next(error);
             }
-            logger.info(result);
-            return res.json({state:'success', summarized_text: result});
+            return res.json({state:'success', summarized_text: result[0], url:newsUrl['url']});
         });
     }else{
         return res.status(430).json({state:'fail', message:`cant find news newsId:${req.params.newsId}`});
@@ -89,7 +88,7 @@ router.post('/:newsId', getUid, async (req, res, next) => {
                 if (!read.length){
                     await user.addNews(req.params.newsId);
                     await user.update({point: sequelize.literal(`${user.point} + ${news.point}`)});
-                    return res.json({status:'success', point:eval(user.point)});
+                    return res.json({status:'success', point:eval(user.point.val)});
                 }
                 return res.status(431).json({status:'fail', message:'already read news'});
             })

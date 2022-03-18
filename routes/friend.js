@@ -14,7 +14,10 @@ const router = express.Router();
 router.get('/:keyword', async (req, res, next) => {
     try{
         //sequelize like문법으로 사용자 이름 검색
-        const searchResult =  await User.findAll({where: { name:{[Op.like]:`${req.params.keyword}%` }}});
+        const searchResult =  await User.findAll({
+            where: { name:{[Op.like]:`${req.params.keyword}%` }},
+            attributes:['id', 'name', 'point']
+        });
         logger.info(searchResult);
         if (searchResult.length) {
             return res.json({state: 'success', result: searchResult});
@@ -42,19 +45,18 @@ router.get('/', getUid, async (req, res, next) => {
                 attributes:['id', 'name', 'point'],      
             }]
         });
+        
         if(user){
             //친구 탐색
             let friends = [];
             var acceptWaiting = user.getDataValue('RequestUser');
             var requestWaiting = user.getDataValue('AcceptUser');
-
             //요청, 응답 대기 리스트에서 이미 친구가 된 상태만 다른 array로 이동
             requestWaiting.forEach((user, index) => {                
                 if (user.getDataValue('Firend').getDataValue('state'))                    
                     friends.push(requestWaiting.splice(index,1)[0]);
             });
             acceptWaiting.forEach((user, index) => {                
-                delete requestWaiting[index]['Firend'];
                 if (user.getDataValue('Firend').getDataValue('state'))
                     friends.push(acceptWaiting.splice(index,1)[0]);                
             });
@@ -75,11 +77,11 @@ router.post('/:id/request', getUid, async (req, res, next) => {
         if(requestUser){
             const acceptCheck = await Friends.findOne({where:{acceptId:requestUser.id, requestId: req.params.id}});
             if(acceptCheck){    //이미 요청이 와있는경우
-                acceptCheck.update({state:true});
-                return res.send(acceptCheck);
+                await acceptCheck.update({state:true});
+                return res.json({state:'success', result:acceptCheck});
             }
             await requestUser.addAcceptUser(parseInt(req.params.id));
-            return res.json({state:'success', result: req.params.id});
+            return res.json({state:'success', id: req.params.id});
         } else {
             return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
         }
@@ -96,7 +98,8 @@ router.post('/:id/accept', getUid, async (req, res, next) => {
             const friend = await Friends.update({state: true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
-            return res.json({state:'success', result:friend});
+            
+            return friend[0] ? res.json({state:'success'}) : res.status(402).json({state:'fail'})
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {

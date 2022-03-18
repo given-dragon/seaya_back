@@ -30,7 +30,7 @@ router.post('/:cpnId', getUid, async (req, res, next) => {
                 if (!read.length){
                     await user.addCampaign(req.params.cpnId);
                     await user.update({point: sequelize.literal(`${user.point} + ${campaign.point}`)});
-                    return res.json({status:'success', point:eval(user.point)});
+                    return res.json({status:'success', point:eval(user.point.val)});
                 }
                 return res.status(441).json({status:'fail', message:'already read campaign'});
             })

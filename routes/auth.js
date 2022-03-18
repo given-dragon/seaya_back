@@ -24,7 +24,7 @@ router.post('/join', getUid, async (req, res, next) => {
                     point: 0,
                 });
                 logger.info(newUser);
-                return res.json({ state : 'success', message:'welcome'});
+                return res.json({ state : 'success'});
             }
         }
         return res.status(400).json({state:'fail', message : "empty uid in body" });
@@ -45,7 +45,7 @@ router.post('/login', getUid, async (req, res, next) => {
             // 유저 데이터베이스가 있으면 true 반환
             if (exUser) {
                 logger.info(`login user: ${exUser.name}`);
-                return res.json({state:'success', existDB : 'true' });
+                return res.json({state:'success'});
             } else {
                 logger.info(`${exUser} is not our user`);
                 return res.status(400).json({state:'false', message:`${exUser} is not our user`});

@@ -10,8 +10,7 @@ exports.getUid = async (req, res, next) => {
             .then((decodedToken) => {            
                 // logger.info(decodedToken.uid);
                 const uid = decodedToken.uid;
-                req.uid = uid;    
-                logger.info(req.uid);
+                req.uid = uid;
             })
             .catch((error) => {
                 logger.error(error);

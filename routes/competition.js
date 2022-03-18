@@ -78,7 +78,7 @@ router.post('/:id/request', getUid, async (req, res, next) => {
                 return res.status(451).json({state:'fail', message:'duplication cpt request'});
             
             await requestUser.addCptAcceptuser(parseInt(req.params.id));
-            return res.json({state:'success', result: req.params.id});
+            return res.json({state:'success', id: req.params.id});
         } else {
             return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
         }
@@ -90,9 +90,8 @@ router.post('/:id/request', getUid, async (req, res, next) => {
 //겨루기 수락
 router.post('/:id/accept', getUid, async (req, res, next) => {
     try {
-        const user = await User.findOne({where: {uid: 'd1oJhQr4GMRci8YY7oHKk4U9vba2'}});
+        const user = await User.findOne({where: {uid: req.uid}});
         if(user){                    
-            // scheduleTime.setSeconds(scheduleTime.getSeconds() +5);
             const updateState = await Competition.update({state:true},{ 
                 where : { acceptId: user.id, requestId: req.params.id },
             });
