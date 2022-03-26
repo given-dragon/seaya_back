@@ -9,6 +9,7 @@ module.exports = class Quiz extends Sequelize.Model{
         },{
             sequelize,
             timestamps: true,
+            updatedAt: false,
             deletedAt: false,
             underscored: false,
             modelName: 'Quiz',

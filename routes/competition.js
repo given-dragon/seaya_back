@@ -34,12 +34,10 @@ router.get('/', getUid, async (req, res, next) => {
 
             //요청, 응답 대기 리스트에서 이미 경쟁자가 된 상태만 다른 array로 이동            
             requestWaiting.forEach((user, index) => {                
-                logger.info(user);
                 if (user.getDataValue('Competition').getDataValue('state'))                    
                     competitors.push(requestWaiting.splice(index,1)[0]);
             });
             acceptWaiting.forEach((user, index) => {   
-                logger.info(user);
                 if (user.getDataValue('Competition').getDataValue('state'))
                     competitors.push(acceptWaiting.splice(index,1)[0]);                
             });

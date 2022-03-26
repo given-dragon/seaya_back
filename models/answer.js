@@ -9,6 +9,7 @@ module.exports = class Answer extends Sequelize.Model{
         },{
             sequelize,
             underscored: false,
+            timestamps:false,
             modelName: 'Answer',
             tableName: 'answers',
             charset: 'utf8',

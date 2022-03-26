@@ -11,18 +11,21 @@ const router = express.Router();
 //친구 목록, 수락 대기중
 
 //유저 검색(이름 검색)
-router.get('/:keyword', async (req, res, next) => {
+router.get('/:keyword', getUid, async (req, res, next) => {
     try{
-        //sequelize like문법으로 사용자 이름 검색
-        const searchResult =  await User.findAll({
-            where: { name:{[Op.like]:`${req.params.keyword}%` }},
-            attributes:['id', 'name', 'point']
-        });
-        logger.info(searchResult);
-        if (searchResult.length) {
-            return res.json({state: 'success', result: searchResult});
+        const myName = await User.findOne({where:{uid:req.uid}, raw:true, attributes:['name']});
+        if(myName){
+            //sequelize like문법으로 사용자 이름 검색
+            const searchResult =  await User.findAll({
+                where: { [Op.and]:[{name:{[Op.like]:`${req.params.keyword}%` }}, {name:{[Op.not]:myName['name']}}]},
+                attributes:['id', 'name', 'point']
+            });
+            if (searchResult.length) {
+                return res.json({state: 'success', result: searchResult});
+            }
+            return res.status(400).json({state: 'fail', message:`cant found user ${req.params.keyword}`});
         }
-        return res.status(400).json({state: 'fail', message:`cant found user ${req.params.keyword}`});
+        return res.status(400).json({state: 'fail', message:`wrong uid`});
         
     }catch(error) {
         logger.error(error);

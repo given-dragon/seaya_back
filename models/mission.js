@@ -3,14 +3,14 @@ const Sequelize = require('sequelize');
 module.exports = class Mission extends Sequelize.Model{
     static init(sequelize) {
         return super.init({
-            date: Sequelize.STRING(10), //삭제해야함
-            title: Sequelize.STRING(20),
-            info: Sequelize.STRING,
+            title: Sequelize.STRING,
+            info: Sequelize.STRING(2000),
             point: Sequelize.INTEGER,
 
         },{
             sequelize,
             timestamps: true,
+            updatedAt: false,
             deletedAt: false,
             underscored: false,
             modelName: 'Mission',

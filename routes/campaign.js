@@ -6,7 +6,21 @@ const logger = require('../logger');
 const {getUid} = require('./middlewares');
 const sequelize = require('sequelize');
 const router = express.Router();
-
+router.get('/add', async (req, res, next) => {
+    
+    const url = 'https://cloud.greensk.greenpeace.org/petitions-ocean-sanctuaries2?_ga=2.1410545.1546264524.1647701980-24342909.1645769692';
+    var title = 'test title';
+    var info = 'test info';
+    const point = 10;
+    for (var i=1; i< 11; i++){
+        var num = i.toString();
+        var temp_t = title + num;
+        var temp_i = info + num;
+        await Campaign.create({url, title:temp_t, info:temp_i, point});
+    }
+    
+    return res.send('end');
+});
 router.get('/', async (req, res, next) => {
 
     Campaign.findAll()

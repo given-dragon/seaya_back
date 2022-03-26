@@ -8,7 +8,24 @@ const sequelize = require('sequelize');
 const router = express.Router();
 
 const pythonShell = require('python-shell');
-
+router.get('/add', async (req, res, next) => {
+    
+    const url = 'https://www.hani.co.kr/arti/opinion/because/1034204.html';
+    var title = 'test title';
+    var publisher = 'test publisher';
+    var reporter = 'test reporter';
+    const point = 10;
+    for (var i=1; i< 11; i++){
+        var date = new Date().toDateString();
+        var num = i.toString();
+        var temp_t = title + num;
+        var temp_p = publisher + num;
+        var temp_r = reporter + num;
+        await News.create({date, url, temp_t, publishing_company:temp_p, temp_r, point});
+    }
+    
+    return res.send('end');
+});
 //뉴스의 기본정보(id, 제목, 등등)을 모두 보냄 -> 뉴스탭에 표시
 router.get('/', getUid, async (req, res, next) => {
     //읽었던 뉴스 아이디 검색
@@ -29,7 +46,7 @@ router.get('/', getUid, async (req, res, next) => {
     
     
     News.findAll({attributes:[
-            'id', 'date', 'title', 'point',
+            'id', 'date', 'title', 'publishing_company', 'reporter', 'point',
             //isRead 값 추가(읽었던 뉴스면 true, 아니면 false)
             [sequelize.literal(`CASE WHEN id IN (${readNewsId}) THEN ${true} ELSE ${false} END`), 'isRead']
         ]})

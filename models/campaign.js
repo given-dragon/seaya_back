@@ -4,12 +4,13 @@ module.exports = class Campaign extends Sequelize.Model{
     static init(sequelize) {
         return super.init({
             url: Sequelize.STRING,
-            title: Sequelize.STRING(20),
+            title: Sequelize.STRING,
             info: Sequelize.STRING,
             point: Sequelize.INTEGER,
         },{
             sequelize,
             timestamps: true,
+            updatedAt: false,
             underscored: false,
             modelName: 'Campaign',
             tableName: 'campaigns',

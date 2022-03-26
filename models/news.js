@@ -3,16 +3,17 @@ const Sequelize = require('sequelize');
 module.exports = class News extends Sequelize.Model{
     static init(sequelize) {
         return super.init({
-            date: Sequelize.STRING(20),
+            date: Sequelize.STRING,
             url: Sequelize.STRING,
-            title: Sequelize.STRING(20),
-            publishing_company: Sequelize.STRING(30),
-            reporter: Sequelize.STRING(20),
+            title: Sequelize.STRING,
+            publishing_company: Sequelize.STRING,
+            reporter: Sequelize.STRING,
             point: Sequelize.INTEGER,
 
         },{
             sequelize,
             timestamps: true,
+            updatedAt: false,
             deletedAt: false,
             underscored: false,
             modelName: 'News',

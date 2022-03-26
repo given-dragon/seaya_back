@@ -10,6 +10,11 @@ const Mission = require('../models/mission');
 const logger = require('../logger');
 const router = express.Router();
 
+router.get('/add', async (req, res, next) => {
+    const {title, info, point} = req.body;
+    const temp = await Mission.create({title:title, info:info, point:point});
+    return res.send(temp);
+});
 //미션 리스트 출력
 router.get('/', getUid, async (req, res, next) => {
     //유저가 클리어한 미션 리스트

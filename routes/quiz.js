@@ -8,7 +8,27 @@ const {updateCptPoint} = require('../function');
 
 const router = express.Router();
 
-
+router.get('/ans/add', async (req, res, next) => {
+    const Answer = require('../models/answer');
+    var cont = 'test content ';
+    var answer = false;
+    for (var i=1; i< 5; i++){
+        var num = i.toString();
+        var temp_c = cont + num;
+        var temp_a = answer;
+        if(i==1){
+            var temp_a = !answer;
+        }
+        await Answer.create({content:temp_c, ans_check:temp_a, QuizId:11});
+    }
+    
+    return res.send('end');
+});
+router.get('/add', async (req, res, next) => {
+    const {question, point} = req.body;
+    const temp = await Quiz.create({question:question, point:point});
+    return res.send(temp);
+});
 //퀴즈 출력
 router.get('/start', getUid, checkDailly, async (req, res, next) => {
         const user = await User.findOne({
@@ -26,7 +46,7 @@ router.get('/start', getUid, checkDailly, async (req, res, next) => {
             //유저가 맞추지 않은 퀴즈만 FindAll
             var quiz = await Quiz.findAll({
                 where:{id:{[Op.not]:solvedQuizId}},
-                attributes:['id', 'quistion', 'point' ],
+                attributes:['id', 'question', 'point' ],
                 include:{
                     model: Answer,
                     attributes:['id', 'content', 'ans_check']

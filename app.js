@@ -32,7 +32,6 @@ const app = express();
 //혹시나 삭제되지 않은 겨루기가 있는지 확인(v)
 schedule.scheduleJob('0 0 0 * * *', async () => {
     await cptRefresh();
-
     logger.info('mission check reset');
     await sequelize.query('DELETE FROM MissionCheck');
     await sequelize.query('DELETE FROM DaillyCheck');    
@@ -49,6 +48,7 @@ initializeApp({
 
 sequelize.sync({ force: false })
     .then(() => {
+        logger.info(process.env.NODE_ENV);
         logger.info('데이터베이스 연결 성공');
     })
     .catch((error) => {
