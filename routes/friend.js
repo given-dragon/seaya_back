@@ -13,12 +13,28 @@ const router = express.Router();
 //유저 검색(이름 검색)
 router.get('/:keyword', getUid, async (req, res, next) => {
     try{
-        const myName = await User.findOne({where:{uid:req.uid}, raw:true, attributes:['name']});
+        const myName = await User.findOne({where:{uid:req.uid}, raw:true, attributes:['id', 'name']});
         if(myName){
+            let friendList = [];
+            await Friends.findAll({where:{requestId:myName['id']}, attributes:['acceptId'], raw:true})
+                .then((friends) => {
+                    if(friends.length != 0)
+                        friends.forEach((friend) => {friendList.push(friend['acceptId']);});
+                });
+            await Friends.findAll({where:{acceptId:myName['id']}, attributes:['requestId'], raw:true})
+                .then((friends) => {
+                    if(friends.length != 0)
+                        friends.forEach((friend) => {friendList.push(friend['requestId']);});
+                });
+
+            
+
             //sequelize like문법으로 사용자 이름 검색
             const searchResult =  await User.findAll({
                 where: { [Op.and]:[{name:{[Op.like]:`${req.params.keyword}%` }}, {name:{[Op.not]:myName['name']}}]},
-                attributes:['id', 'name', 'point']
+                attributes:['id', 'name', 'point',
+                    [sequelize.literal(`CASE WHEN id IN (${friendList}) THEN ${true} ELSE ${false} END`), 'isFriend']
+                ],
             });
             if (searchResult.length) {
                 return res.json({state: 'success', result: searchResult});
@@ -28,6 +44,7 @@ router.get('/:keyword', getUid, async (req, res, next) => {
         return res.status(400).json({state: 'fail', message:`wrong uid`});
         
     }catch(error) {
+        console.log(error);
         logger.error(error);
         next(error);
     }
