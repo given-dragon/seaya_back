@@ -15,6 +15,7 @@ router.get('/:keyword', getUid, async (req, res, next) => {
     try{
         const myName = await User.findOne({where:{uid:req.uid}, raw:true, attributes:['id', 'name']});
         if(myName){
+            //friend check
             let friendList = [];
             await Friends.findAll({where:{requestId:myName['id']}, attributes:['acceptId'], raw:true})
                 .then((friends) => {
@@ -25,9 +26,7 @@ router.get('/:keyword', getUid, async (req, res, next) => {
                 .then((friends) => {
                     if(friends.length != 0)
                         friends.forEach((friend) => {friendList.push(friend['requestId']);});
-                });
-
-            
+                });            
 
             //sequelize like문법으로 사용자 이름 검색
             const searchResult =  await User.findAll({
@@ -44,7 +43,6 @@ router.get('/:keyword', getUid, async (req, res, next) => {
         return res.status(400).json({state: 'fail', message:`wrong uid`});
         
     }catch(error) {
-        console.log(error);
         logger.error(error);
         next(error);
     }
