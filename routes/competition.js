@@ -25,7 +25,7 @@ router.get('/', getUid, async (req, res, next) => {
                 attributes:['id', 'name'],      
             }]
         });
-        // logger.info(user);
+        
         if(user){
             //경쟁자 탐색
             let competitors = [];

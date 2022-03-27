@@ -6,6 +6,7 @@ const Op = sequelize.Op;
 const User = require('../models/user');
 const Friends = require('../models/friend');
 const logger = require('../logger');
+const Competition = require('../models/competition');
 
 const router = express.Router();
 //친구 목록, 수락 대기중
@@ -20,12 +21,12 @@ router.get('/:keyword', getUid, async (req, res, next) => {
             await Friends.findAll({where:{requestId:myName['id']}, attributes:['acceptId'], raw:true})
                 .then((friends) => {
                     if(friends.length != 0)
-                        friends.forEach((friend) => {friendList.push(friend['acceptId']);});
+                        friends.forEach((friend) => friendList.push(friend['acceptId']));
                 });
             await Friends.findAll({where:{acceptId:myName['id']}, attributes:['requestId'], raw:true})
                 .then((friends) => {
                     if(friends.length != 0)
-                        friends.forEach((friend) => {friendList.push(friend['requestId']);});
+                        friends.forEach((friend) => friendList.push(friend['requestId']));
                 });            
 
             //sequelize like문법으로 사용자 이름 검색
@@ -51,7 +52,7 @@ router.get('/:keyword', getUid, async (req, res, next) => {
 router.get('/', getUid, async (req, res, next) => {
     try {
         const user = await User.findOne({
-            attributes:[],
+            attributes:['id'],
             where: {uid: req.uid}, 
             include:[{
                 model:User,
@@ -63,7 +64,17 @@ router.get('/', getUid, async (req, res, next) => {
                 attributes:['id', 'name', 'point'],      
             }]
         });
-        
+        let cptList = [];
+        await Competition.findAll({where:{requestId:user.getDataValue('id')}, attribute:['acceptId'], raw:true})
+            .then((users) => {
+                if(users.length!=0)
+                    users.forEach((obj) => cptList.push(obj['acceptId']));
+            });
+        await Competition.findAll({where:{acceptId:user.getDataValue('id')}, attribute:['requestId'], raw:true})
+        .then((users) => {
+            if(users.length!=0)
+                users.forEach((obj) => cptList.push(obj['requestId']));
+        });
         if(user){
             //친구 탐색
             let friends = [];
@@ -78,7 +89,7 @@ router.get('/', getUid, async (req, res, next) => {
                 if (user.getDataValue('Firend').getDataValue('state'))
                     friends.push(acceptWaiting.splice(index,1)[0]);                
             });
-            return res.json({state: 'success', friends: friends, accept_waiting: acceptWaiting, request_waiting: requestWaiting});
+            return res.json({state: 'success', friends: friends, accept_waiting: acceptWaiting, request_waiting: requestWaiting, cpt_list:cptList});
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
