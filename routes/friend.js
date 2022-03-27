@@ -36,10 +36,7 @@ router.get('/:keyword', getUid, async (req, res, next) => {
                     [sequelize.literal(`CASE WHEN id IN (${friendList}) THEN ${true} ELSE ${false} END`), 'isFriend']
                 ],
             });
-            if (searchResult.length) {
                 return res.json({state: 'success', result: searchResult});
-            }
-            return res.status(400).json({state: 'fail', message:`cant found user ${req.params.keyword}`});
         }
         return res.status(400).json({state: 'fail', message:`wrong uid`});
         
