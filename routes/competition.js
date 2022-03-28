@@ -25,24 +25,36 @@ router.get('/', getUid, async (req, res, next) => {
                 attributes:['id', 'name'],      
             }]
         });
-        
+
         if(user){
             //경쟁자 탐색
             let competitors = [];
             var acceptWaiting = user.getDataValue('CptRequestUser');    //내가 수락해야하는 요청(겨루기 신청한 사람의 정보)
             var requestWaiting = user.getDataValue('CptAcceptuser');    //내가 보낸 요청(받아야하는 사람의 정보)
+            console.log(requestWaiting.length);
+            console.log('=================');
 
-            //요청, 응답 대기 리스트에서 이미 경쟁자가 된 상태만 다른 array로 이동            
-            requestWaiting.forEach((user, index) => {                
-                if (user.getDataValue('Competition').getDataValue('state'))                    
-                    competitors.push(requestWaiting.splice(index,1)[0]);
+            //요청, 응답 대기 리스트에서 이미 경쟁자가 된 상태만 다른 array로 이동    
+            let tempReqW = [];
+            requestWaiting.forEach((user, index) => {                                
+                if (user.getDataValue('Competition').getDataValue('state')){
+                    console.log(user.getDataValue('Competition'));
+                    competitors.push(requestWaiting[index]);
+                }else{
+                    tempReqW.push(requestWaiting[index]);
+                }
             });
+            let tempAccW = [];
             acceptWaiting.forEach((user, index) => {   
-                if (user.getDataValue('Competition').getDataValue('state'))
-                    competitors.push(acceptWaiting.splice(index,1)[0]);                
+                console.log(user.getDataValue('Competition'));
+                if (user.getDataValue('Competition').getDataValue('state')){
+                    competitors.push(acceptWaiting[index]);                     
+                }else{
+                    tempAccW.push(acceptWaiting[index]);
+                }
             });
             
-            return res.json({state: 'success', competitors: competitors, accept_waiting: acceptWaiting, request_waiting: requestWaiting});
+            return res.json({state: 'success', competitors: competitors, accept_waiting: tempAccW, request_waiting: tempReqW});
         }
         return res.status(400).json({state:'fail', message:'cant found user(wrong uid)'});
     } catch (error) {
