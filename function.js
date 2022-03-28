@@ -13,6 +13,15 @@ exports.updateCptPoint = async function (userId, point, flag, t){
         await Competition.update({auPoint: sequelize.literal(`auPoint - ${point}`)}, {where:{acceptId:userId, endAt:null, startAt:{[Op.not]:null}},transaction:t});
     }
 }
+exports.updateCptPoint2 = async function (userId, point, flag){
+    if(flag){
+        await Competition.update({ruPoint: sequelize.literal(`ruPoint + ${point}`)}, {where:{requestId:userId, endAt:null, startAt:{[Op.not]:null}}});
+        await Competition.update({auPoint: sequelize.literal(`auPoint + ${point}`)}, {where:{acceptId:userId, endAt:null, startAt:{[Op.not]:null}}});
+    }else{
+        await Competition.update({ruPoint: sequelize.literal(`ruPoint - ${point}`)}, {where:{requestId:userId, endAt:null, startAt:{[Op.not]:null}}});
+        await Competition.update({auPoint: sequelize.literal(`auPoint - ${point}`)}, {where:{acceptId:userId, endAt:null, startAt:{[Op.not]:null}}});
+    }
+}
 
 exports.cptRefresh = async () => {
     const weekAgo  = new Date();

@@ -4,6 +4,7 @@ const User = require('../models/user');
 const News = require('../models/news');
 const logger = require('../logger');
 const {getUid} = require('./middlewares');
+const {updateCptPoint2} = require('../function');
 const sequelize = require('sequelize');
 const router = express.Router();
 
@@ -105,6 +106,7 @@ router.post('/:newsId', getUid, async (req, res, next) => {
                 if (!read.length){
                     await user.addNews(req.params.newsId);
                     await user.update({point: sequelize.literal(`${user.point} + ${news.point}`)});
+                    await updateCptPoint2(user.id, news.point, true);
                     return res.json({status:'success', point:eval(user.point.val)});
                 }
                 return res.status(431).json({status:'fail', message:'already read news'});

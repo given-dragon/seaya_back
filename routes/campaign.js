@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Campaign = require('../models/campaign');
 const logger = require('../logger');
 const {getUid} = require('./middlewares');
+const {updateCptPoint2} = require('../function');
 const sequelize = require('sequelize');
 const router = express.Router();
 router.get('/add', async (req, res, next) => {
@@ -44,6 +45,7 @@ router.post('/:cpnId', getUid, async (req, res, next) => {
                 if (!read.length){
                     await user.addCampaign(req.params.cpnId);
                     await user.update({point: sequelize.literal(`${user.point} + ${campaign.point}`)});
+                    await updateCptPoint2(user.id, campaign.point, true);
                     return res.json({status:'success', point:eval(user.point.val)});
                 }
                 return res.status(441).json({status:'fail', message:'already read campaign'});
