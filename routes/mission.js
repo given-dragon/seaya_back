@@ -55,16 +55,17 @@ router.post('/:msId/clear', getUid, async (req, res, next) => {
         if(mission){
             const t = await sequelize.transaction();
             try {
-                //MissionCheck에 등록
-                await user.addMission(req.params.msId,{transaction:t});
-                //유저 점수 갱신
-                // user.update({point: `${user.point} + ${mission.point}`});
-                await user.update({point: sequelize.literal(`${user.point} + ${mission.point}`)},{transaction:t});
-                await updateCptPoint(user.id, mission.point, true, t);
-                t.commit();
+                await Promise.all([
+                    //MissionCheck에 등록
+                    user.addMission(req.params.msId,{transaction:t}),
+                    //유저 점수 갱신
+                    user.update({point: sequelize.literal(`${user.point} + ${mission.point}`)},{transaction:t}),
+                    updateCptPoint(user.id, mission.point, true, t)
+                ]);                
+                await t.commit();
             } catch (error) {
                 logger.error(error);
-                t.rollback();
+                await t.rollback();
             }
             return res.json({state: 'success', point: eval(user.point.val)});            
         }
@@ -83,14 +84,17 @@ router.post('/:msId/cancle', getUid, async (req, res, next) => {
         if(mission.length){   //성공한 기록이 있으면 삭제 시작
             const t = await sequelize.transaction();
             try{
-                //MissionCheck에 삭제
-                await user.removeMission(
-                    req.params.msId,
-                    {transaction:t}
-                );
-                //유저 점수 갱신
-                await user.update({point: sequelize.literal(`${user.point} - ${mission[0].point}`)},{transaction:t});
-                await updateCptPoint(user.id, mission[0].point, false, t);
+                await Promise.all([
+                    //MissionCheck에 삭제
+                    user.removeMission(
+                        req.params.msId,
+                        {transaction:t}
+                    ),
+                    //유저 점수 갱신
+                    user.update({point: sequelize.literal(`${user.point} - ${mission[0].point}`)},{transaction:t}),
+                    updateCptPoint(user.id, mission[0].point, false, t)
+                ]);
+                
                 await t.commit();                
             }catch(error){
                 logger.info('mission cancle transaction rollback');

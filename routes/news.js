@@ -104,9 +104,11 @@ router.post('/:newsId', getUid, async (req, res, next) => {
 
                 const read = await news.getUsers({where:{id:user.id}});
                 if (!read.length){
-                    await user.addNews(req.params.newsId);
-                    await user.update({point: sequelize.literal(`${user.point} + ${news.point}`)});
-                    await updateCptPoint2(user.id, news.point, true);
+                    await Promise.all([
+                        user.addNews(req.params.newsId),
+                        user.update({point: sequelize.literal(`${user.point} + ${news.point}`)}),
+                        updateCptPoint2(user.id, news.point, true),
+                    ]);                    
                     return res.json({status:'success', point:eval(user.point.val)});
                 }
                 return res.status(431).json({status:'fail', message:'already read news'});

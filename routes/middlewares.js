@@ -5,17 +5,18 @@ const logger = require('../logger');
 // 앱에서 토큰을 받아 firebase에서 uid를 가져온다.
 exports.getUid = async (req, res, next) => {
     try{
-        await admin.auth()
-            .verifyIdToken(req.headers['authorization'])
-            .then((decodedToken) => {            
-                // logger.info(decodedToken.uid);
-                const uid = decodedToken.uid;
-                req.uid = uid;
-            })
-            .catch((error) => {
-                logger.error(error);
-                next(error);
-            });
+        req.uid = 'iMvMBsFvspax191QkHnxk7VJ1MV2';
+        // await admin.auth()
+        //     .verifyIdToken(req.headers['authorization'])
+        //     .then((decodedToken) => {            
+        //         // logger.info(decodedToken.uid);
+        //         const uid = decodedToken.uid;
+        //         req.uid = uid;
+        //     })
+        //     .catch((error) => {
+        //         logger.error(error);
+        //         next(error);
+        //     });
     }catch(error){
         logger.error(error)
         next(error);

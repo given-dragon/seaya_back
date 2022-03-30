@@ -31,27 +31,20 @@ router.get('/', getUid, async (req, res, next) => {
             let competitors = [];
             var acceptWaiting = user.getDataValue('CptRequestUser');    //내가 수락해야하는 요청(겨루기 신청한 사람의 정보)
             var requestWaiting = user.getDataValue('CptAcceptuser');    //내가 보낸 요청(받아야하는 사람의 정보)
-            console.log(requestWaiting.length);
-            console.log('=================');
 
             //요청, 응답 대기 리스트에서 이미 경쟁자가 된 상태만 다른 array로 이동    
             let tempReqW = [];
             requestWaiting.forEach((user, index) => {                                
-                if (user.getDataValue('Competition').getDataValue('state')){
-                    console.log(user.getDataValue('Competition'));
-                    competitors.push(requestWaiting[index]);
-                }else{
-                    tempReqW.push(requestWaiting[index]);
-                }
+                user.getDataValue('Competition').getDataValue('state') 
+                ? competitors.push(requestWaiting[index]) 
+                : tempReqW.push(requestWaiting[index]);
             });
             let tempAccW = [];
             acceptWaiting.forEach((user, index) => {   
                 console.log(user.getDataValue('Competition'));
-                if (user.getDataValue('Competition').getDataValue('state')){
-                    competitors.push(acceptWaiting[index]);                     
-                }else{
-                    tempAccW.push(acceptWaiting[index]);
-                }
+                user.getDataValue('Competition').getDataValue('state') 
+                ? competitors.push(acceptWaiting[index]) 
+                : tempAccW.push(acceptWaiting[index]);
             });
             
             return res.json({state: 'success', competitors: competitors, accept_waiting: tempAccW, request_waiting: tempReqW});

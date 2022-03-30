@@ -18,16 +18,19 @@ router.get('/:keyword', getUid, async (req, res, next) => {
         if(myName){
             //friend check
             let friendList = [];
-            await Friends.findAll({where:{requestId:myName['id']}, attributes:['acceptId'], raw:true})
-                .then((friends) => {
+            Promise.all([
+                Friends.findAll({where:{requestId:myName['id']}, attributes:['acceptId'], raw:true})
+                    .then((friends) => {
                     if(friends.length != 0)
                         friends.forEach((friend) => friendList.push(friend['acceptId']));
-                });
-            await Friends.findAll({where:{acceptId:myName['id']}, attributes:['requestId'], raw:true})
-                .then((friends) => {
-                    if(friends.length != 0)
-                        friends.forEach((friend) => friendList.push(friend['requestId']));                    
-                });            
+                    }),
+                Friends.findAll({where:{acceptId:myName['id']}, attributes:['requestId'], raw:true})
+                    .then((friends) => {
+                        if(friends.length != 0)
+                            friends.forEach((friend) => friendList.push(friend['requestId']));                    
+                    })
+            ]);
+            
                 if(friendList.length == 0) friendList.push(0);
             //sequelize like문법으로 사용자 이름 검색
             const searchResult =  await User.findAll({
